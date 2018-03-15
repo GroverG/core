@@ -57,24 +57,40 @@ class Api::V2::TagsController < Api::BaseController
       raise "unexpected parent type: #{params[:parent_type]}"
     end
 
-    if params[:child_id] && params[:child_type] == 'Tag'
-      child = Tag.where(id: params[:child_id]).first!
-    elsif params[:child_id] && params[:child_type] == 'Team'
-      child = Team.where(id: params[:child_id]).first!
+    # if params[:child_id] && params[:child_type] == 'Tag'
+    #   child = Tag.where(id: params[:child_id]).first!
+    # elsif params[:child_id] && params[:child_type] == 'Team'
+    #   child = Team.where(id: params[:child_id]).first!
+    # elsif params[:child_text]
+    #   #child = Team.where(slug: params[:child_text].downcase).first
+    #   child = Tag.where(name: params[:child_text]).first_or_create!
+    # end
+
+    if params[:child_id]
+      child = Team.where(id: params[:child_id]).first! || Tag.where(id: params[:child_id]).first!
     elsif params[:child_text]
       #child = Team.where(slug: params[:child_text].downcase).first
       child = Tag.where(name: params[:child_text]).first_or_create!
     end
 
-    tag_relation = TagRelation.where(parent: parent, child: child).first_or_create!
+    if params[:team_add_child]
+      tag_relation = TagRelation.where(parent: parent, child: child).first_or_create!
+    end
 
-    tag_vote = tag_relation.votes.where(person: current_user).first_or_initialize
-    tag_vote.value = params[:downvote] ? -1 : 1
-    tag_vote.save!
+    if params[:team_remove_child]
+      tag_relation = TagRelation.where(parent: parent, child: child).first.destroy
+    end
+
+
+    # tag_vote = tag_relation.votes.where(person: current_user).first_or_initialize
+    # tag_vote.value = params[:downvote] ? -1 : 1
+    # tag_vote.save!
 
     # render the index
     index
     render 'api/v2/tags/index'
   end
 
+  def destroy
+  end
 end

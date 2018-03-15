@@ -64,5 +64,25 @@
       <thumbnail-links array="team_inclusions.teams" per-row="6" object-type="'team-with-dismiss'" dismiss-action="team_inclusions.remove(team)"></thumbnail-links>
     </div>
 
+    <div ng-show="is_admin">
+      <h3>{{team.name}}'s Tags</h3>
+      <div class="well">
+        <form class="form-inline" name="search_form" style="margin-bottom:0px">
+          <label>Add Tags:</label>
+          <input type="text"
+                 class="form-control"
+                 style="width: 300px;"
+                 placeholder="Start typing"
+                 ng-model="team_taggings.model"
+                 typeahead="tag.name for tag in team_taggings.typeahead($viewValue)"
+                 typeahead-on-select="team_taggings.add($item)"
+                 typeahead-template-url="common/directives/teamView/tag_autocomplete.html"
+          />
+        </form>
+        <loading-bar ng-show="add_working">Searching</loading-bar>
+      </div>
+      <thumbnail-links array="team_taggings.teams" per-row="6" object-type="'team-with-dismiss'" dismiss-action="team_taggings.remove(team)"></thumbnail-links>
+    </div>
+
   </div>
 </div>
