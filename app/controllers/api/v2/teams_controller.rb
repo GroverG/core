@@ -91,7 +91,6 @@ class Api::V2::TeamsController < Api::BaseController
 
       @collection = @collection.where(id: (@team_backer_ids + @team_included_ids + @team_tagged_ids).uniq).where.not(id: team.id).order('activity_total desc')
     end
-    
     @collection = paginate!(@collection)
 
     @include_team_extended = true if params[:include_extended]

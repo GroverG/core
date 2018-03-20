@@ -5,7 +5,6 @@ class Api::V2::TagsController < Api::BaseController
   before_filter :require_auth, only: [ :create ]
 
   def index
-    
     if params[:search]
       @collection = []
       unless params[:disclude_tags].to_bool
@@ -39,11 +38,8 @@ class Api::V2::TagsController < Api::BaseController
       # @collection = TagRelation.where('weight>0').group('child_id, child_type').select('child_id, child_type, sum(weight)')
       #
       #   Tag.joins(:child_tag_relations).where('weight>0').group('tags.id').having('sum(weight)>0').order('sum(weight) desc')
-      @collection = Team.where(slug: "javascript")
     else
       @collection = []
-  
-      
     end
 
     #@collection = paginate!(@collection)
