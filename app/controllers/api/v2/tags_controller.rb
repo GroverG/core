@@ -5,7 +5,7 @@ class Api::V2::TagsController < Api::BaseController
   before_filter :require_auth, only: [ :create ]
 
   def index
-
+    
     if params[:search]
       @collection = []
       unless params[:disclude_tags].to_bool
@@ -39,8 +39,11 @@ class Api::V2::TagsController < Api::BaseController
       # @collection = TagRelation.where('weight>0').group('child_id, child_type').select('child_id, child_type, sum(weight)')
       #
       #   Tag.joins(:child_tag_relations).where('weight>0').group('tags.id').having('sum(weight)>0').order('sum(weight) desc')
+      @collection = Team.where(slug: "javascript")
     else
       @collection = []
+  
+      
     end
 
     #@collection = paginate!(@collection)
@@ -50,11 +53,11 @@ class Api::V2::TagsController < Api::BaseController
   end
 
   def create
-    if params[:parent_id] && params[:parent_type]=='Team'
-      parent = Team.where(id: params[:parent_id]).first!
+    if params[:child_id] && params[:child_type]=='Team'
+      child = Team.where(id: params[:child_id]).first!
     # TODO: add Person here
     else
-      raise "unexpected parent type: #{params[:parent_type]}"
+      raise "unexpected child type: #{params[:child_type]}"
     end
 
     # if params[:child_id] && params[:child_type] == 'Tag'
@@ -66,18 +69,18 @@ class Api::V2::TagsController < Api::BaseController
     #   child = Tag.where(name: params[:child_text]).first_or_create!
     # end
 
-    if params[:child_id]
-      child = Team.where(id: params[:child_id]).first! || Tag.where(id: params[:child_id]).first!
-    elsif params[:child_text]
-      #child = Team.where(slug: params[:child_text].downcase).first
-      child = Tag.where(name: params[:child_text]).first_or_create!
+    if params[:parent_id]
+      parent = Team.where(id: params[:parent_id]).first! || Tag.where(id: params[:parent_id]).first!
+    elsif params[:parent_text]
+      #parent = Team.where(slug: params[:parent_text].downcase).first
+      parent = Tag.where(name: params[:parent_text]).first_or_create!
     end
 
-    if params[:team_add_child]
+    if params[:team_add_parent]
       tag_relation = TagRelation.where(parent: parent, child: child).first_or_create!
     end
 
-    if params[:team_remove_child]
+    if params[:team_remove_parent]
       tag_relation = TagRelation.where(parent: parent, child: child).first.destroy
     end
 
