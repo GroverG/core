@@ -53,11 +53,11 @@ class Api::V2::TagsController < Api::BaseController
   end
 
   def create
-    if params[:child_id] && params[:child_type]=='Team'
-      child = Team.where(id: params[:child_id]).first!
+    if params[:parent_id] && params[:parent_type]=='Team'
+      parent = Team.where(id: params[:parent_id]).first!
     # TODO: add Person here
     else
-      raise "unexpected child type: #{params[:child_type]}"
+      raise "unexpected parent type: #{params[:parent_type]}"
     end
 
     # if params[:child_id] && params[:child_type] == 'Tag'
@@ -69,18 +69,18 @@ class Api::V2::TagsController < Api::BaseController
     #   child = Tag.where(name: params[:child_text]).first_or_create!
     # end
 
-    if params[:parent_id]
-      parent = Team.where(id: params[:parent_id]).first! || Tag.where(id: params[:parent_id]).first!
-    elsif params[:parent_text]
-      #parent = Team.where(slug: params[:parent_text].downcase).first
-      parent = Tag.where(name: params[:parent_text]).first_or_create!
+    if params[:child_id]
+      child = Team.where(id: params[:child_id]).first! || Tag.where(id: params[:child_id]).first!
+    elsif params[:child_text]
+      #child = Team.where(slug: params[:child_text].downcase).first
+      child = Tag.where(name: params[:child_text]).first_or_create!
     end
 
-    if params[:team_add_parent]
+    if params[:team_add_child]
       tag_relation = TagRelation.where(parent: parent, child: child).first_or_create!
     end
 
-    if params[:team_remove_parent]
+    if params[:team_remove_child]
       tag_relation = TagRelation.where(parent: parent, child: child).first.destroy
     end
 

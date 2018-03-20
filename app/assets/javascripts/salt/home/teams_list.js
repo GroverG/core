@@ -25,11 +25,11 @@ angular.module('app').config(function($stateProvider) {
           request.search = $stateParams.search;
         } else if ($stateParams.tag) {
           if ($stateParams.tag.match(/^\d+$/)) {
-            request.tag_parent_type = 'Tag';
-            request.tag_parent_id = $stateParams.tag;
+            request.tag_child_type = 'Tag';
+            request.tag_child_id = $stateParams.tag;
           } else {
-            request.tag_parent_type = 'TeamSlug';
-            request.tag_parent_id = $stateParams.tag;
+            request.tag_child_type = 'TeamSlug';
+            request.tag_child_id = $stateParams.tag;
           }
         } else if ($stateParams.newest) {
           request.newest = true;

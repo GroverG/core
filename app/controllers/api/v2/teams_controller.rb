@@ -54,17 +54,17 @@ class Api::V2::TeamsController < Api::BaseController
       @collection = @collection.where("homepage_featured > 0").order(:homepage_featured)
     end
     
-    if params[:tag_parent_type] == 'TeamSlug'
-      params[:tag_parent_type] = 'Team'
-      params[:tag_parent_id] = Team.where(slug: params[:tag_parent_id]).first!.id
-      parent = Team.find(params[:tag_parent_id])
+    if params[:tag_child_type] == 'TeamSlug'
+      params[:tag_child_type] = 'Team'
+      params[:tag_child_id] = Team.where(slug: params[:tag_child_id]).first!.id
+      child = Team.find(params[:tag_child_id])
     end
 
-    if TagRelation::VALID_CLASSES.include?(params[:tag_parent_type]) && params.has_key?(:tag_parent_id) && params[:tag_parent_id].to_i>0
+    if TagRelation::VALID_CLASSES.include?(params[:tag_child_type]) && params.has_key?(:tag_child_id) && params[:tag_child_id].to_i>0
       # @collection = @collection.joins(:parent_tag_relations).where("tag_relations.parent_id" => params[:tag_parent_id], "tag_relations.parent_type" => params[:tag_parent_type]).order('activity_total desc')
-      byebug
-      child_ids = parent.parent_tag_relations.pluck(:child_id)
-      @collection = Team.where(id: child_ids)
+
+      parent_ids = child.child_tag_relations.pluck(:parent_id)
+      @collection = Team.where(id: parent_ids)
     # elsif params.has_key?(:tag_parent_type) && params.has_key?(:tag_parent_id) && params[:tag_parent_id].to_i>0
     #   @collection = @collection.joins(:tag_relations).where("tag_relations.parent_id" => params[:tag_parent_id], "tag_relations.parent_type" => params[:tag_parent_type]).where('weight>0').order('activity_total desc')
     end
@@ -91,7 +91,7 @@ class Api::V2::TeamsController < Api::BaseController
 
       @collection = @collection.where(id: (@team_backer_ids + @team_included_ids + @team_tagged_ids).uniq).where.not(id: team.id).order('activity_total desc')
     end
-    byebug
+    
     @collection = paginate!(@collection)
 
     @include_team_extended = true if params[:include_extended]

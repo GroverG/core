@@ -93,15 +93,15 @@ angular.module('app').controller('TeamManageProjectsController', function ($scop
     $scope.team_inclusions.refresh();
 
     $scope.team_taggings = {
-      add: function(parent_tag) {
-        Tag.create({ team_add_parent: parent_tag, child_id: team.id, child_type: 'Team', parent_id: parent_tag.id, parent_text: parent_tag.name}, function(response) {
+      add: function(child_tag) {
+        Tag.create({ team_add_child: child_tag, child_id: child_tag.id, parent_type: 'Team', parent_id: team.id, child_text: child_tag.name}, function(response) {
           $scope.team_taggings.model = null;
           $scope.team_taggings.refresh();
         });
       },
 
-      remove: function(parent_tag) {
-        Tag.create({ team_remove_parent: parent_tag, child_id: team.id, child_type: 'Team', parent_id: parent_tag.id, parent_text: parent_tag.name}, function(response) {
+      remove: function(child_tag) {
+        Tag.create({ team_remove_child: child_tag, child_id: child_tag.id, parent_type: 'Team', parent_id: team.id, child_text: child_tag.name}, function(response) {
           $scope.team_taggings.model = null;
           $scope.team_taggings.refresh();
         });
@@ -113,7 +113,7 @@ angular.module('app').controller('TeamManageProjectsController', function ($scop
 
       refresh: function() {
         $scope.team_taggings.model = null;
-        Tag.query({ child_type: "Team", child_id: team.id }, function(response) {
+        Tag.query({ parent_type: "Team", parent_id: team.id }, function(response) {
           $scope.team_taggings.teams = response;
         });
       }
